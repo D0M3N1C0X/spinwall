@@ -83,6 +83,7 @@ svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width:
 .icon-btn:hover, .pill-btn:hover, .nav-btn:hover { background: var(--fill-hover); }
 .icon-btn:active, .pill-btn:active, .nav-btn:active { transform: scale(0.96); }
 .icon-btn { width: 44px; height: 44px; border-radius: 50%; }
+.icon-btn .gear { width: 23px; height: 23px; stroke-width: 1.7; }
 .pill-btn { min-height: 44px; padding: 0 18px; border-radius: 22px; font-weight: 600; font-size: 16px; white-space: nowrap; }
 .pill-btn svg { width: 18px; height: 18px; stroke-width: 2.4; }
 .pill-btn.big { min-height: 52px; padding: 0 28px; font-size: 17px; background: #fff; color: #111; }
