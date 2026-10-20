@@ -1,7 +1,7 @@
 // Offline support. The app's own files are fetched fresh when online and
 // served from the cache when not; album covers are cached once and kept.
 
-const SHELL = 'spinwall-shell-v1';
+const SHELL = 'spinwall-shell-v2';
 const COVERS = 'spinwall-covers-v1';
 const FILES = [
   './', 'index.html', 'styles.css', 'manifest.webmanifest',

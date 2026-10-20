@@ -188,8 +188,12 @@ export async function fetchBlurb(title, artist) {
   const search = await getJSON(`https://en.wikipedia.org/w/api.php?${q}`);
   const t = norm(title);
   const a = norm(artist);
-  for (const hit of search.query?.search || []) {
-    if (!norm(hit.title).includes(t)) continue;
+  // "In Rainbows" must beat "In Rainbows – From the Basement": pages titled
+  // exactly like the album, or "Album (… album)", are tried first.
+  const hits = (search.query?.search || [])
+    .filter((h) => norm(h.title).includes(t))
+    .sort((x, y) => Number(norm(y.title) === t || /\balbum\)$/i.test(y.title)) - Number(norm(x.title) === t || /\balbum\)$/i.test(x.title)));
+  for (const hit of hits) {
     const page = await getJSON(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(hit.title.replace(/ /g, '_'))}`);
     const text = page.extract || '';
     const loose = norm(text);

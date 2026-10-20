@@ -160,12 +160,17 @@ function extractColors(url) {
 
 const layers = [...document.querySelectorAll('#backdrop .layer')];
 let layerIdx = 0;
-function paint(colors) {
+function paint(colors, artwork) {
   const prev = layers[layerIdx];
   layerIdx ^= 1;
   const next = layers[layerIdx];
   const [c1, c2, base] = (colors || [[44, 44, 52], [20, 20, 24], [20, 20, 24]]).map((c) => `rgb(${c.join(',')})`);
-  next.style.background = `radial-gradient(120% 75% at 12% 0%, ${c1} 0%, transparent 72%), radial-gradient(110% 80% at 100% 100%, ${c2} 0%, transparent 72%), ${base}`;
+  const glow = `radial-gradient(120% 75% at 12% 0%, ${c1} 0%, transparent 72%), radial-gradient(110% 80% at 100% 100%, ${c2} 0%, transparent 72%)`;
+  // A small copy of the cover is plenty once it's blurred this much.
+  const art = artwork ? `url("${artwork.replace(/\/\d+x\d+bb\.jpg$/, '/200x200bb.jpg')}"), ` : '';
+  next.style.background = `${art}${glow}, ${base}`;
+  next.style.backgroundSize = 'cover';
+  next.style.backgroundPosition = 'center';
   next.classList.add('on');
   prev.classList.remove('on');
   document.querySelector('meta[name="theme-color"]').content = base;
@@ -177,7 +182,7 @@ async function backdropFor(album) {
     if (!colors) return;
     update(album, { colors });
   }
-  if (state.current === album) paint(album.colors);
+  if (state.current === album) paint(album.colors, album.artwork);
 }
 
 // ---------- Wall ----------
@@ -440,6 +445,7 @@ function openAdd(tab = 'search') {
 
 function selectTab(tab) {
   const recent = tab === 'recent';
+  document.querySelector('.segmented').dataset.tab = tab;
   $('#tab-search').setAttribute('aria-selected', String(!recent));
   $('#tab-recent').setAttribute('aria-selected', String(recent));
   $('#pane-search').hidden = recent;
@@ -714,6 +720,18 @@ $('#import-file').addEventListener('change', async (e) => {
 });
 
 // ---------- Wiring ----------
+
+// The glass highlight follows the pointer or finger across each surface.
+const GLASS = '.icon-btn, .pill-btn, .nav-btn, .glass, .sheet, .toast';
+function followLight(e) {
+  const el = e.target.closest?.(GLASS);
+  if (!el) return;
+  const r = el.getBoundingClientRect();
+  el.style.setProperty('--mx', `${(((e.clientX - r.left) / r.width) * 100).toFixed(1)}%`);
+  el.style.setProperty('--my', `${(((e.clientY - r.top) / r.height) * 100).toFixed(1)}%`);
+}
+document.addEventListener('pointermove', followLight, { passive: true });
+document.addEventListener('pointerdown', followLight, { passive: true });
 
 document.querySelectorAll('dialog').forEach((d) => {
   d.addEventListener('click', (e) => { if (e.target === d) d.close(); });
