@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Spinwall</title>
+  <meta name="description" content="Your listened albums, on a wall you can flip through.">
+  <meta name="theme-color" content="#141418">
+  <meta name="color-scheme" content="dark">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Spinwall">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <link rel="icon" type="image/png" href="icons/icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Two layers so the colours taken from the centred cover can cross-fade. -->
+  <div id="backdrop" aria-hidden="true">
+    <div class="layer"></div>
+    <div class="layer"></div>
+  </div>
+
+  <header class="topbar">
+    <h1 class="brand">Spinwall</h1>
+    <div class="topbar-actions">
+      <button id="btn-settings" class="icon-btn" type="button" aria-label="Settings">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm7.4-2.5a7.6 7.6 0 0 0 0-2l2-1.6-2-3.4-2.4 1a7.4 7.4 0 0 0-1.7-1L15 3h-4l-.3 2.5a7.4 7.4 0 0 0-1.7 1l-2.4-1-2 3.4 2 1.6a7.6 7.6 0 0 0 0 2l-2 1.6 2 3.4 2.4-1a7.4 7.4 0 0 0 1.7 1L11 21h4l.3-2.5a7.4 7.4 0 0 0 1.7-1l2.4 1 2-3.4-2-1.6Z"/></svg>
+      </button>
+      <button id="btn-add" class="pill-btn" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        <span>Add album</span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section id="empty" class="empty" hidden>
+      <div class="empty-art" aria-hidden="true"><span></span><span></span><span></span></div>
+      <h2>Your wall is empty</h2>
+      <p>Add the albums you’ve listened to, then flip through them like a shelf of records.</p>
+      <button class="pill-btn big" type="button" data-action="add">Add your first album</button>
+      <button class="text-btn" type="button" data-action="demo">Try it with a few classics</button>
+    </section>
+
+    <section id="wall" class="wall" hidden aria-label="Your albums">
+      <div id="stage" class="stage" tabindex="0" role="listbox" aria-label="Albums. Use the left and right arrow keys to browse, Enter to turn the cover over." aria-orientation="horizontal"></div>
+      <button class="nav-btn prev" type="button" data-action="prev" aria-label="Previous album">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
+      <button class="nav-btn next" type="button" data-action="next" aria-label="Next album">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
+      </button>
+    </section>
+
+    <div id="wall-bar" class="wall-bar" hidden>
+      <p id="hint" class="hint" hidden>Swipe to browse · Tap the cover to see the songs</p>
+      <p id="position" class="position" aria-live="polite"></p>
+    </div>
+
+    <section id="info" class="info glass" hidden aria-labelledby="i-title">
+      <div class="info-head">
+        <div class="info-titles">
+          <h2 id="i-title"></h2>
+          <p id="i-artist" class="artist"></p>
+          <p id="i-meta" class="meta"></p>
+        </div>
+        <button id="i-flip" class="pill-btn ghost" type="button" aria-pressed="false">Show songs</button>
+      </div>
+
+      <div class="info-grid">
+        <div class="mine">
+          <h3 class="section-label">Your notes</h3>
+          <div id="i-stars" class="stars" role="radiogroup" aria-label="Your rating"></div>
+          <label class="field">
+            <span>Listened on</span>
+            <input id="i-date" type="date">
+          </label>
+          <textarea id="i-note" class="note" rows="3" placeholder="What did it make you feel? Where were you?" aria-label="Your note"></textarea>
+        </div>
+        <div class="about">
+          <h3 class="section-label">Your listening</h3>
+          <div id="i-stats" class="stats"></div>
+          <h3 class="section-label">About this album</h3>
+          <div id="i-blurb" class="blurb"></div>
+        </div>
+      </div>
+
+      <button id="i-remove" class="text-btn danger" type="button">Remove from wall</button>
+    </section>
+  </main>
+
+  <!-- Add album -->
+  <dialog id="add-sheet" class="sheet" aria-labelledby="add-title">
+    <div class="sheet-head">
+      <h2 id="add-title">Add album</h2>
+      <button class="text-btn" type="button" data-close>Done</button>
+    </div>
+    <div class="segmented" role="tablist" aria-label="How to find albums">
+      <button id="tab-search" role="tab" type="button" aria-selected="true" aria-controls="pane-search">Search</button>
+      <button id="tab-recent" role="tab" type="button" aria-selected="false" aria-controls="pane-recent">Recently played</button>
+    </div>
+    <div id="pane-search" class="pane" role="tabpanel" aria-labelledby="tab-search">
+      <label class="search-field">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>
+        <input id="search-input" type="search" placeholder="Album or artist" aria-label="Search for an album or artist" autocomplete="off" enterkeyhint="search">
+      </label>
+      <ul id="search-results" class="result-list" aria-live="polite"></ul>
+    </div>
+    <div id="pane-recent" class="pane" role="tabpanel" aria-labelledby="tab-recent" hidden>
+      <ul id="recent-results" class="result-list" aria-live="polite"></ul>
+    </div>
+  </dialog>
+
+  <!-- Settings -->
+  <dialog id="settings-sheet" class="sheet" aria-labelledby="settings-title">
+    <div class="sheet-head">
+      <h2 id="settings-title">Settings</h2>
+      <button class="text-btn" type="button" data-close>Done</button>
+    </div>
+    <div class="sheet-body">
+      <section class="group">
+        <h3 class="group-title">Listening history</h3>
+        <p class="group-note">Spinwall uses your history to suggest albums you’ve played and to count how often you play them.</p>
+
+        <div class="card-row">
+          <div class="card-row-text">
+            <strong>Spotify</strong>
+            <span id="spotify-status">Not imported yet</span>
+          </div>
+          <label class="pill-btn small" for="spotify-file">Import file</label>
+          <input id="spotify-file" type="file" accept=".json,application/json" multiple hidden>
+        </div>
+        <details class="howto">
+          <summary>How do I get my Spotify file?</summary>
+          <ol>
+            <li>Open <a href="https://www.spotify.com/account/privacy/" target="_blank" rel="noopener">Spotify’s privacy page</a> and sign in.</li>
+            <li>Tick <em>Extended streaming history</em> and tap <em>Request data</em>. Spotify emails you when it’s ready, usually within a few days.</li>
+            <li>Open the email, download the zip and open it. Pick the files whose names start with <em>Streaming_History</em>.</li>
+          </ol>
+        </details>
+
+        <div class="card-row">
+          <div class="card-row-text">
+            <strong>Last.fm</strong>
+            <span id="lastfm-status">Keeps up with what you play on Spotify</span>
+          </div>
+        </div>
+        <form id="lastfm-form" class="inline-form">
+          <input id="lastfm-user" type="text" placeholder="Your Last.fm username" aria-label="Your Last.fm username" autocomplete="username" autocapitalize="none" spellcheck="false">
+          <button id="lastfm-sync" class="pill-btn small" type="submit">Connect</button>
+        </form>
+        <details class="howto">
+          <summary>How does Last.fm work?</summary>
+          <ol>
+            <li>Create a free account at <a href="https://www.last.fm/join" target="_blank" rel="noopener">last.fm</a>.</li>
+            <li>In Last.fm settings, open <em>Applications</em> and connect Spotify. From then on every song you play is recorded.</li>
+            <li>Type your username here and tap <em>Connect</em>.</li>
+          </ol>
+        </details>
+      </section>
+
+      <section class="group">
+        <h3 class="group-title">Your wall</h3>
+        <label class="card-row">
+          <span class="card-row-text"><strong>Order</strong></span>
+          <select id="sort-select" aria-label="Order of the albums">
+            <option value="added">Recently added</option>
+            <option value="artist">Artist</option>
+            <option value="year">Release year</option>
+            <option value="rating">Your rating</option>
+          </select>
+        </label>
+        <div class="card-row">
+          <div class="card-row-text">
+            <strong>Backup</strong>
+            <span>Save your wall to a file, or move it to another device.</span>
+          </div>
+          <div class="row-buttons">
+            <button id="export-btn" class="pill-btn small ghost" type="button">Save</button>
+            <label class="pill-btn small ghost" for="import-file">Open</label>
+            <input id="import-file" type="file" accept=".json,application/json" hidden>
+          </div>
+        </div>
+      </section>
+
+      <section class="group">
+        <h3 class="group-title">Privacy</h3>
+        <p class="group-note">Everything stays on this device. Album details come from Apple’s public catalogue, descriptions from Wikipedia.</p>
+      </section>
+    </div>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
