@@ -5,9 +5,10 @@ Your listened albums, on a wall you can flip through. Cover Flow for iPhone, iPa
 This folder is the **web app**: it runs today in Safari and installs to the Home Screen.
 The native SwiftUI app (App Store, Apple Music, iCloud sync) follows once a Mac that runs Xcode 26 is available.
 
-## Open it on this Mac
+## Open it
 
-Double-click **Apri Spinwall.app**. It starts a small local server and opens Safari at `http://localhost:8642`.
+- **Online:** https://d0m3n1c0x.github.io/spinwall/ — open it in Safari and add it to the Home Screen.
+- **On your computer:** from this folder run `python3 -m http.server 8642` and open `http://localhost:8642`.
 
 ## What it does
 
@@ -28,7 +29,7 @@ Everything is stored on the device (IndexedDB). There are no accounts and no ser
 | Covers, year, genre, track list | iTunes Search API | No |
 | Description | Wikipedia REST API | No |
 | Spotify history | The JSON files from Spotify's privacy page | The user requests them |
-| Last.fm scrobbles | Last.fm API, `user.getRecentTracks` | Free API key in `js/config.js` |
+| Last.fm scrobbles (coming soon) | Last.fm API, `user.getRecentTracks` | A free API key in `js/config.js`, empty today |
 
 Spotify's Web API is not used for login on purpose. Since 2025 an app in development mode allows only 5 users, and extended access requires a registered business with 250k monthly users.
 
@@ -60,3 +61,7 @@ sw.js                 offline cache
 | Spotify files, Last.fm | Same parsing in Swift, `fileImporter` for the JSON files |
 
 The album model to keep: `id, itunesId, title, artist, year, genre, trackCount, durationMs, tracks[{n, disc, title, ms}], artwork, appleMusicUrl, addedAt, rating, note, listenedOn, blurb{text, url}`.
+
+## Licence
+
+MIT, see [LICENSE](LICENSE).

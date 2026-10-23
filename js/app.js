@@ -260,7 +260,7 @@ function renderBack(el, album) {
       head = `<li class="disc">Disc ${disc}</li>`;
     }
     const isTop = stats?.top?.c > 1 && stats.top.key === src.trackKey(album.artist, t.title);
-    return `${head}<li class="${isTop ? 'top' : ''}"><span class="n">${t.n}</span><span class="t">${esc(t.title)}</span><span class="d">${dur(t.ms)}</span></li>`;
+    return `${head}<li class="${isTop ? 'top' : ''}"><span class="n">${esc(t.n)}</span><span class="t">${esc(t.title)}</span><span class="d">${dur(t.ms)}</span></li>`;
   }).join('');
   el.innerHTML = `
     <button class="back-head" type="button" data-action="unflip" aria-label="Turn back to the cover">
@@ -269,9 +269,14 @@ function renderBack(el, album) {
     </button>
     <ol class="tracks" aria-label="Songs">${rows || '<li><span></span><span class="t">No song list available</span></li>'}</ol>
     <div class="back-actions">
-      <a href="${esc(album.appleMusicUrl)}" target="_blank" rel="noopener">Apple Music</a>
-      <a href="${esc(src.spotifyUrl(album))}" target="_blank" rel="noopener">Spotify</a>
+      <a href="${esc(sicuro(album.appleMusicUrl))}" target="_blank" rel="noopener">Apple Music</a>
+      <a href="${esc(sicuro(src.spotifyUrl(album)))}" target="_blank" rel="noopener">Spotify</a>
     </div>`;
+}
+
+// Links come from the catalogue or from a backup file someone may have edited: only https links are used.
+function sicuro(url) {
+  try { return new URL(url).protocol === 'https:' ? url : '#'; } catch { return '#'; }
 }
 
 // ---------- Info panel ----------
