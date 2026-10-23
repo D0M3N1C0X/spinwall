@@ -1,3 +1,10 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="site-assets/cover-dark.png">
+  <img alt="Spinwall: your albums, on a Cover Flow wall. No account, no server, one web app for iPhone, iPad and Mac." src="site-assets/cover-light.png">
+</picture>
+
+<p align="center"><a href="https://d0m3n1c0x.github.io/spinwall/"><b>Open Spinwall</b></a></p>
+
 # Spinwall
 
 Your listened albums, on a wall you can flip through. Cover Flow for iPhone, iPad and Mac.
@@ -62,6 +69,8 @@ sw.js                 offline cache
 
 The album model to keep: `id, itunesId, title, artist, year, genre, trackCount, durationMs, tracks[{n, disc, title, ms}], artwork, appleMusicUrl, addedAt, rating, note, listenedOn, blurb{text, url}`.
 
-## Licence
+## About
 
-MIT, see [LICENSE](LICENSE).
+Built by **Domenico Perroni**, based in Kraków. [GitHub](https://github.com/D0M3N1C0X) · [Portfolio](https://d0m3n1c0x.github.io/)
+
+MIT licensed, see [LICENSE](LICENSE).
